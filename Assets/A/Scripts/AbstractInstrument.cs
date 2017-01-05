@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using MidiSheetMusic;
 using UnityEngine;
+using Spine.Unity;
 namespace Assets.A.Scripts
 {
     public abstract class AbstractInstrument : MonoBehaviour, InstrumentEventHandler
@@ -24,15 +25,18 @@ namespace Assets.A.Scripts
         private int nextNoteIndex;
         private int nextNoteImpulse;
 
+        public SkeletonAnimation ske;
 
-        public void Init(MusicBandManager _manager, MidiTrack _midiTrack, AudioSource _audioSource, AudioClip _audioClip, Type_Instrument _typeInstrument)
+        private tk2dSprite btnActiveState;
+        public void Init(MidiTrack _midiTrack, AudioClip _audioClip)
         {
-            this.manager = _manager;
+
             this.trackMidi = _midiTrack;
-            this.audioSource = _audioSource;
+
             this.audioClip = _audioClip;
-            this.typeInstrument = _typeInstrument;
+
             audioSource.clip = audioClip;
+            btnActiveState.SetSprite("");
             ResetNextImpulse();
         }
 

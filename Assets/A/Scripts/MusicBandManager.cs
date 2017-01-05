@@ -33,6 +33,7 @@ namespace Assets.A.Scripts
             arrInstruments = new AbstractInstrument[MusicBandConfig.NO_INSTRUMENT];
             for (int i = 0; i < MusicBandConfig.NO_INSTRUMENT; i++)
             {
+                /*
                 Debug.Log("i: " + i);
                 GameObject go = new GameObject();
                 go.transform.SetParent(transform);
@@ -83,6 +84,7 @@ namespace Assets.A.Scripts
                     instrumentScript.Init(this, midi.Tracks[i], go.GetComponent<AudioSource>(), midiFileItem.cello, typeInstrument);
                 }
                 go.name = typeInstrument.ToString();
+                */
             }
             arrInstruments[0].OnPickUpInstrumentEvent();
         }

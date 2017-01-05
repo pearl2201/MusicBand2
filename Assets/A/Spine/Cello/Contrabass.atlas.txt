@@ -1,0 +1,111 @@
+
+Contrabass.png
+size: 669,669
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Layer 1
+  rotate: false
+  xy: 337, 2
+  size: 33, 82
+  orig: 33, 82
+  offset: 0, 0
+  index: -1
+Layer 2.1
+  rotate: true
+  xy: 403, 146
+  size: 51, 35
+  orig: 51, 35
+  offset: 0, 0
+  index: -1
+body
+  rotate: false
+  xy: 228, 199
+  size: 216, 468
+  orig: 216, 468
+  offset: 0, 0
+  index: -1
+chan_moi
+  rotate: true
+  xy: 570, 275
+  size: 11, 64
+  orig: 11, 64
+  offset: 0, 0
+  index: -1
+contrabass
+  rotate: false
+  xy: 2, 16
+  size: 224, 651
+  orig: 224, 651
+  offset: 0, 0
+  index: -1
+hand
+  rotate: false
+  xy: 446, 267
+  size: 122, 143
+  orig: 122, 143
+  offset: 0, 0
+  index: -1
+hand copy
+  rotate: false
+  xy: 228, 86
+  size: 173, 111
+  orig: 173, 111
+  offset: 0, 0
+  index: -1
+hand1
+  rotate: false
+  xy: 446, 412
+  size: 211, 255
+  orig: 211, 255
+  offset: 0, 0
+  index: -1
+hand1 copy
+  rotate: false
+  xy: 446, 150
+  size: 140, 115
+  orig: 140, 115
+  offset: 0, 0
+  index: -1
+head_fur
+  rotate: true
+  xy: 228, 4
+  size: 80, 107
+  orig: 80, 107
+  offset: 0, 0
+  index: -1
+mouth
+  rotate: false
+  xy: 570, 288
+  size: 89, 122
+  orig: 89, 122
+  offset: 0, 0
+  index: -1
+n_ap_ut
+  rotate: true
+  xy: 588, 223
+  size: 50, 23
+  orig: 50, 23
+  offset: 0, 0
+  index: -1
+n_giua
+  rotate: true
+  xy: 403, 87
+  size: 57, 24
+  orig: 57, 24
+  offset: 0, 0
+  index: -1
+n_tro
+  rotate: true
+  xy: 372, 26
+  size: 58, 28
+  orig: 58, 28
+  offset: 0, 0
+  index: -1
+n_ut
+  rotate: true
+  xy: 588, 175
+  size: 46, 20
+  orig: 46, 20
+  offset: 0, 0
+  index: -1
