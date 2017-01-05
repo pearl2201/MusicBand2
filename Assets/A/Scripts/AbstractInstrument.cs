@@ -18,7 +18,7 @@ namespace Assets.A.Scripts
 
         public AudioSource audioSource;
 
-        public AudioClip audioClip;
+        private AudioClip audioClip;
 
         public bool isPlaying;
 
@@ -26,8 +26,8 @@ namespace Assets.A.Scripts
         private int nextNoteImpulse;
 
         public SkeletonAnimation ske;
-
-        private tk2dSprite btnActiveState;
+        [SerializeField]
+        protected tk2dSprite btnActiveState;
         public void Init(MidiTrack _midiTrack, AudioClip _audioClip)
         {
 
@@ -36,8 +36,19 @@ namespace Assets.A.Scripts
             this.audioClip = _audioClip;
 
             audioSource.clip = audioClip;
-            btnActiveState.SetSprite("");
+            btnActiveState.SetSprite("instrument_off");
             ResetNextImpulse();
+        }
+
+        public void Click()
+        {
+            if (isPlaying)
+            {
+                OnRemoveInstrumentEvent();
+            }else
+            {
+                OnPickUpInstrumentEvent();
+            }
         }
 
         public void OnPickUpInstrumentEvent()
@@ -77,8 +88,23 @@ namespace Assets.A.Scripts
         }
         public abstract void OnNoteOn(MidiNote[] note, float duration);
 
-        public abstract void PickUpInstrumentSuccess();
+        public virtual void PickUpInstrumentSuccess(float time)
+        {
+            isPlaying = true;
+            btnActiveState.SetSprite("instrument_on");
+            audioSource.loop = true;
+            audioSource.Play();
+            audioSource.time = time;
+           
+        }
 
-        public abstract void RemoveInstrumentSuccess();
+        public virtual void RemoveInstrumentSuccess()
+        {
+            
+            btnActiveState.SetSprite("instrument_off");
+            isPlaying = false;
+            audioSource.loop = false;
+            audioSource.Stop();
+        }
     }
 }

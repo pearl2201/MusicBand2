@@ -15,7 +15,7 @@ namespace Assets.A.Scripts
 
         [SerializeField]
         private List<AbstractInstrument> listInstrumentActives;
-
+        [SerializeField]
         private AbstractInstrument[] arrInstruments;
 
         private bool breakMusic;
@@ -30,9 +30,30 @@ namespace Assets.A.Scripts
             MidiFile midi = new MidiFile(Application.dataPath + midiFileItem.pathMidiFile);
             Debug.Log("midi.count track: " + midi.Tracks.Count);
             listInstrumentActives = new List<AbstractInstrument>();
-            arrInstruments = new AbstractInstrument[MusicBandConfig.NO_INSTRUMENT];
+           
             for (int i = 0; i < MusicBandConfig.NO_INSTRUMENT; i++)
             {
+                if (i == (int)Type_Instrument.VIOLIN)
+                {
+                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.violin);
+                }
+                else if (i == (int)Type_Instrument.PIANO)
+                {
+                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.piano);
+                }
+                else if (i == (int)Type_Instrument.DRUM)
+                {
+                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.drum);
+                }
+                else if (i == (int)Type_Instrument.SAXOPHONE)
+                {
+                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.saxophone);
+                }
+                else if (i == (int)Type_Instrument.CELLO)
+                {
+                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.cello);
+                }
+
                 /*
                 Debug.Log("i: " + i);
                 GameObject go = new GameObject();
@@ -86,7 +107,7 @@ namespace Assets.A.Scripts
                 go.name = typeInstrument.ToString();
                 */
             }
-            arrInstruments[0].OnPickUpInstrumentEvent();
+            
         }
 
         IEnumerator IEUpdateInstrument()
@@ -115,24 +136,19 @@ namespace Assets.A.Scripts
 
                 if (listInstrumentActives.Count > 0)
                 {
-                    instrument.isPlaying = true;
-                    instrument.audioSource.loop = true;
-                    instrument.audioSource.time = listInstrumentActives[0].audioSource.time;
+                 
+          
 
-                    instrument.audioSource.Play();
-                    instrument.PickUpInstrumentSuccess();
+                    instrument.PickUpInstrumentSuccess(listInstrumentActives[0].audioSource.time);
                     listInstrumentActives.Add(instrument);
                 }
                 else
                 {
 
-                    instrument.isPlaying = true;
-                    instrument.audioSource.loop = true;
-                    instrument.audioSource.time = 0;
-                    instrument.audioSource.Play();
+                 
                     breakMusic = false;
                     listInstrumentActives.Add(instrument);
-                    instrument.PickUpInstrumentSuccess();
+                    instrument.PickUpInstrumentSuccess(0);
                     StartCoroutine(IEUpdateInstrument());
                 }
             }
@@ -142,12 +158,11 @@ namespace Assets.A.Scripts
 
         public void OnRemoveInstrument(AbstractInstrument instrument)
         {
+            Debug.Log("remove isntrment: " + instrument.typeInstrument.ToString());
             if (listInstrumentActives.Contains(instrument))
             {
                 listInstrumentActives.Remove(instrument);
-                instrument.isPlaying = false;
-                instrument.audioSource.loop = false;
-                instrument.audioSource.Stop();
+               
                 instrument.RemoveInstrumentSuccess();
                 if (listInstrumentActives.Count == 0)
                 {

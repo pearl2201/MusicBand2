@@ -12,14 +12,15 @@ namespace Assets.A.Scripts.Instruments
 
         }
 
-        public override void PickUpInstrumentSuccess()
+        public override void PickUpInstrumentSuccess(float time)
         {
-
+            base.PickUpInstrumentSuccess(time);
+          
         }
 
         public override void RemoveInstrumentSuccess()
         {
-
+            base.RemoveInstrumentSuccess();
         }
     }
 }
