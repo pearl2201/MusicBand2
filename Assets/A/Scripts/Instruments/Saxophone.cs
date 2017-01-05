@@ -7,7 +7,7 @@ namespace Assets.A.Scripts.Instruments
 {
     public class Saxophone :  AbstractInstrument
     {
-        public override void OnNoteOn(MidiNote[] note, float duration)
+        public override void OnNoteOn(MidiNote[] note,float duration)
         {
 
         }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MidiSheetMusic;
 using Assets.A.Scripts.Instruments;
-
+using System.IO;
 namespace Assets.A.Scripts
 {
     public class MusicBandManager : MonoBehaviour
@@ -22,24 +22,55 @@ namespace Assets.A.Scripts
 
         private int lastImpulse;
 
+        private MidiFile midi;
 
         // Use this for initialization
         void Start()
         {
+            string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, midiFileItem.pathMidiFile);
 
-            MidiFile midi = new MidiFile(Application.dataPath + midiFileItem.pathMidiFile);
+
+            if (Application.isEditor)
+            {
+                filePath = "file:///" + filePath;
+            }
+            if (filePath.Contains("://"))
+            {
+                WWW www = new WWW(filePath);
+                while (!www.isDone)
+                {
+
+                }
+
+                midi = new MidiFile(www.bytes, midiFileItem.pathMidiFile);
+
+
+            }
+            else
+            {
+                Debug.Log("error");
+            }
+
             Debug.Log("midi.count track: " + midi.Tracks.Count);
             listInstrumentActives = new List<AbstractInstrument>();
-           
+
             for (int i = 0; i < MusicBandConfig.NO_INSTRUMENT; i++)
             {
                 if (i == (int)Type_Instrument.VIOLIN)
                 {
+                    for (int j = 0; j < midi.Tracks[i].Notes.Count; j++)
+                    {
+                        Debug.Log(midi.Tracks[i].Notes[j].ToString());
+                    }
+                   
                     arrInstruments[i].Init(midi.Tracks[i], midiFileItem.violin);
+                   
                 }
                 else if (i == (int)Type_Instrument.PIANO)
                 {
+                    
                     arrInstruments[i].Init(midi.Tracks[i], midiFileItem.piano);
+                   
                 }
                 else if (i == (int)Type_Instrument.DRUM)
                 {
@@ -52,78 +83,39 @@ namespace Assets.A.Scripts
                 else if (i == (int)Type_Instrument.CELLO)
                 {
                     arrInstruments[i].Init(midi.Tracks[i], midiFileItem.cello);
+                    for (int j = 0; j < midi.Tracks[i].Notes.Count; j++)
+                    {
+                        Debug.Log(midi.Tracks[i].Notes[j].ToString());
+                    }
                 }
 
-                /*
-                Debug.Log("i: " + i);
-                GameObject go = new GameObject();
-                go.transform.SetParent(transform);
-                go.AddComponent<AudioSource>();
-                AudioSource audioSource = go.GetComponent<AudioSource>();
-                audioSource.playOnAwake = false;
-                audioSource.loop = true;
-                Type_Instrument typeInstrument = Type_Instrument.VIOLIN;
-                if (i == (int)Type_Instrument.VIOLIN)
-                {
-                    typeInstrument = Type_Instrument.VIOLIN;
-                    go.AddComponent<Violin>();
-                    AbstractInstrument instrumentScript = go.GetComponent<Violin>();
-                    arrInstruments[i] = instrumentScript;
-                    instrumentScript.Init(this, midi.Tracks[i], go.GetComponent<AudioSource>(), midiFileItem.violin, typeInstrument);
 
-                }
-                else if (i == (int)Type_Instrument.PIANO)
-                {
-                    typeInstrument = Type_Instrument.PIANO;
-                    go.AddComponent<Piano>();
-                    AbstractInstrument instrumentScript = go.GetComponent<Piano>();
-                    arrInstruments[i] = instrumentScript;
-                    instrumentScript.Init(this, midi.Tracks[i], go.GetComponent<AudioSource>(), midiFileItem.piano, typeInstrument);
-                }
-                else if (i == (int)Type_Instrument.DRUM)
-                {
-                    typeInstrument = Type_Instrument.DRUM;
-                    go.AddComponent<Drum>();
-                    AbstractInstrument instrumentScript = go.GetComponent<Drum>();
-                    arrInstruments[i] = instrumentScript;
-                    instrumentScript.Init(this, midi.Tracks[i], go.GetComponent<AudioSource>(), midiFileItem.drum, typeInstrument);
-                }
-                else if (i == (int)Type_Instrument.SAXOPHONE)
-                {
-                    typeInstrument = Type_Instrument.SAXOPHONE;
-                    go.AddComponent<Saxophone>();
-                    AbstractInstrument instrumentScript = go.GetComponent<Saxophone>();
-                    arrInstruments[i] = instrumentScript;
-                    instrumentScript.Init(this, midi.Tracks[i], go.GetComponent<AudioSource>(), midiFileItem.saxophone, typeInstrument);
-                }
-                else if (i == (int)Type_Instrument.CELLO)
-                {
-                    typeInstrument = Type_Instrument.CELLO;
-                    go.AddComponent<Cello>();
-                    AbstractInstrument instrumentScript = go.GetComponent<Cello>();
-                    arrInstruments[i] = instrumentScript;
-                    instrumentScript.Init(this, midi.Tracks[i], go.GetComponent<AudioSource>(), midiFileItem.cello, typeInstrument);
-                }
-                go.name = typeInstrument.ToString();
-                */
             }
-            
+            //  StartCoroutine(IELoadFileMidi());
+
         }
 
+        IEnumerator IELoadFileMidi()
+        {
+            yield return null;
+        }
         IEnumerator IEUpdateInstrument()
         {
             while (listInstrumentActives.Count > 0 && !breakMusic)
             {
+                int currImpulse = midi.Time.ConvertSecondToPulse(listInstrumentActives[0].audioSource.time);
+                if (currImpulse < lastImpulse)
+                {
+                    lastImpulse = 0;
+                }
                 for (int i = 0; i < listInstrumentActives.Count; i++)
                 {
                     /// convert time to impulse
-                    int currImpulse = 0;
-                    if (currImpulse < lastImpulse)
-                    {
-                        lastImpulse = 0;
-                    }
+                    
                     listInstrumentActives[i].CheckTime(lastImpulse, currImpulse);
+                    
                 }
+                lastImpulse = currImpulse;
                 yield return null;
             }
         }
@@ -136,16 +128,17 @@ namespace Assets.A.Scripts
 
                 if (listInstrumentActives.Count > 0)
                 {
-                 
-          
 
-                    instrument.PickUpInstrumentSuccess(listInstrumentActives[0].audioSource.time);
+
+
+                   
                     listInstrumentActives.Add(instrument);
+                    instrument.PickUpInstrumentSuccess(listInstrumentActives[0].audioSource.time);
                 }
                 else
                 {
 
-                 
+
                     breakMusic = false;
                     listInstrumentActives.Add(instrument);
                     instrument.PickUpInstrumentSuccess(0);
@@ -162,13 +155,22 @@ namespace Assets.A.Scripts
             if (listInstrumentActives.Contains(instrument))
             {
                 listInstrumentActives.Remove(instrument);
-               
+
                 instrument.RemoveInstrumentSuccess();
                 if (listInstrumentActives.Count == 0)
                 {
                     breakMusic = true;
                 }
 
+            }
+        }
+
+
+        public MidiFile MIDI
+        {
+            get
+            {
+                return midi;
             }
         }
     }

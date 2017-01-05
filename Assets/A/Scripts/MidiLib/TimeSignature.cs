@@ -196,6 +196,12 @@ namespace MidiSheetMusic
             return pulse * tempo / (1000000 * quarternote);
         }
 
+
+        public int ConvertSecondToPulse(float second)
+        {
+            return (int)(second * (1000000 * quarternote) / tempo);
+        }
+
     }
 
 }

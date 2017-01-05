@@ -10,13 +10,16 @@ namespace Assets.A.Scripts.Instruments
     {
         public override void OnNoteOn(MidiNote[] note, float duration)
         {
-
+            float durInSec = manager.MIDI.Time.ConvertSecondToPulse(note[0].Duration);
+           ;
+            ske.timeScale = MusicBandConfig.DEFAULT_TIME_ANIM_PER_QUATERNOTE/durInSec;
+            ske.state.SetAnimation(0, "Bird_1", false);
         }
 
         public override void PickUpInstrumentSuccess(float time)
         {
             base.PickUpInstrumentSuccess(time);
-         
+
         }
 
         public override void RemoveInstrumentSuccess()
