@@ -10,9 +10,11 @@ namespace Assets.A.Scripts
     {
 
 
-        [SerializeField]
+      
         private MidiFileItem midiFileItem;
 
+        [SerializeField]
+        private MidiFileItem song1Data, song2Data;
         [SerializeField]
         private List<AbstractInstrument> listInstrumentActives;
         [SerializeField]
@@ -27,8 +29,29 @@ namespace Assets.A.Scripts
         // Use this for initialization
         void Start()
         {
-            string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, midiFileItem.pathMidiFile);
 
+            OpenSong1();
+        }
+
+
+        public void OpenSong1()
+        {
+            breakMusic = true;
+            midiFileItem = song1Data;
+            OpenNewSong();
+        }
+
+        public void OpenSong2()
+        {
+            breakMusic = true;
+            midiFileItem = song2Data;
+            OpenNewSong();
+        }
+
+        void OpenNewSong()
+        {
+            string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, midiFileItem.pathMidiFile);
+            List<MidiTrack> midiTrack = null;
 
             if (Application.isEditor)
             {
@@ -43,7 +66,17 @@ namespace Assets.A.Scripts
                 }
 
                 midi = new MidiFile(www.bytes, midiFileItem.pathMidiFile);
+                Debug.Log("time data: " + midi.Time.ToString());
+                midiTrack = new List<MidiTrack>();
+                for (int track = 0; track < midi.Tracks.Count; track++)
+                {
 
+                    midiTrack.Add(midi.Tracks[track].Clone());
+
+                }
+                MidiOptions option = new MidiOptions(midi);
+                MidiFile.RoundStartTimes(midiTrack, option.combineInterval, midi.Time);
+                MidiFile.RoundDurations(midiTrack, midi.Time.Quarter);
 
             }
             else
@@ -58,41 +91,38 @@ namespace Assets.A.Scripts
             {
                 if (i == (int)Type_Instrument.VIOLIN)
                 {
-                    for (int j = 0; j < midi.Tracks[i].Notes.Count; j++)
-                    {
-                        Debug.Log(midi.Tracks[i].Notes[j].ToString());
-                    }
-                   
-                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.violin);
-                   
+
+
+                    arrInstruments[i].Init(midiTrack[i], midiFileItem.violin);
+
                 }
                 else if (i == (int)Type_Instrument.PIANO)
                 {
-                    
-                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.piano);
-                   
+
+                    arrInstruments[i].Init(midiTrack[i], midiFileItem.piano);
+
                 }
                 else if (i == (int)Type_Instrument.DRUM)
                 {
-                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.drum);
+                    arrInstruments[i].Init(midiTrack[i], midiFileItem.drum);
                 }
                 else if (i == (int)Type_Instrument.SAXOPHONE)
                 {
-                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.saxophone);
+                    arrInstruments[i].Init(midiTrack[i], midiFileItem.saxophone);
+                    for (int j = 0; j < midi.Tracks[i].Notes.Count; j++)
+                    {
+                        Debug.Log(midiTrack[i].Notes[j].ToString());
+                    }
                 }
                 else if (i == (int)Type_Instrument.CELLO)
                 {
-                    arrInstruments[i].Init(midi.Tracks[i], midiFileItem.cello);
-                    for (int j = 0; j < midi.Tracks[i].Notes.Count; j++)
-                    {
-                        Debug.Log(midi.Tracks[i].Notes[j].ToString());
-                    }
+                    arrInstruments[i].Init(midiTrack[i], midiFileItem.cello);
+
                 }
 
 
             }
             //  StartCoroutine(IELoadFileMidi());
-
         }
 
         IEnumerator IELoadFileMidi()
@@ -108,12 +138,13 @@ namespace Assets.A.Scripts
                 {
                     lastImpulse = 0;
                 }
+                // Debug.Log("time: " + listInstrumentActives[0].audioSource.time);
                 for (int i = 0; i < listInstrumentActives.Count; i++)
                 {
                     /// convert time to impulse
-                    
+
                     listInstrumentActives[i].CheckTime(lastImpulse, currImpulse);
-                    
+
                 }
                 lastImpulse = currImpulse;
                 yield return null;
@@ -131,7 +162,7 @@ namespace Assets.A.Scripts
 
 
 
-                   
+
                     listInstrumentActives.Add(instrument);
                     instrument.PickUpInstrumentSuccess(listInstrumentActives[0].audioSource.time);
                 }

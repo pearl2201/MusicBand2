@@ -84,7 +84,7 @@ namespace Assets.A.Scripts
             {
                 List<MidiNote> listNotePlay = new List<MidiNote>();
                 float duration = 0;
-
+                int startTime = 0;
                 float minDuration = 10000;
                 for (int i = nextNoteIndex; i < trackMidi.Notes.Count; i++)
                 {
@@ -94,6 +94,7 @@ namespace Assets.A.Scripts
                         listNotePlay.Add(trackMidi.Notes[i]);
                         minDuration = trackMidi.Notes[i].Duration > minDuration ? minDuration : trackMidi.Notes[i].Duration;
                         duration = trackMidi.Notes[i].Duration > duration ? trackMidi.Notes[i].Duration : duration;
+                        startTime = trackMidi.Notes[i].StartTime;
                     }
                     else if (trackMidi.Notes[i].StartTime > currImpulse)
                     {
@@ -105,13 +106,26 @@ namespace Assets.A.Scripts
                 if (listNotePlay.Count > 0)
                 {
                     //  Debug.Log("currImpulse: " + currImpulse);
-                    if (minDuration != duration)
+                    if (minDuration != duration || listNotePlay.Count == 1)
                     {
                         OnNoteOn(listNotePlay.ToArray(), duration);
                     }
                     else
                     {
-                        OnNoteOn(listNotePlay.ToArray(), duration * listNotePlay.Count);
+                        if (nextNoteImpulse <= startTime)
+                        {
+                            OnNoteOn(listNotePlay.ToArray(), duration * listNotePlay.Count);
+                        }
+                        else if (startTime + duration * listNotePlay.Count <= nextNoteImpulse)
+                        {
+                            OnNoteOn(listNotePlay.ToArray(), duration * listNotePlay.Count);
+                        }
+                        else
+                        {
+                            duration = nextNoteImpulse - (startTime);
+                            OnNoteOn(listNotePlay.ToArray(), duration);
+                        }
+
                     }
                 }
             }
@@ -119,6 +133,7 @@ namespace Assets.A.Scripts
             {
                 List<MidiNote> listNotePlay = new List<MidiNote>();
                 float duration = 0;
+                float startTime = 0;
                 float minDuration = 10000;
                 for (int i = nextNoteIndex; i < trackMidi.Notes.Count; i++)
                 {
@@ -128,6 +143,7 @@ namespace Assets.A.Scripts
                         listNotePlay.Add(trackMidi.Notes[i]);
                         minDuration = trackMidi.Notes[i].Duration > minDuration ? minDuration : trackMidi.Notes[i].Duration;
                         duration = trackMidi.Notes[i].Duration > duration ? trackMidi.Notes[i].Duration : duration;
+                        startTime = trackMidi.Notes[i].StartTime;
                     }
                     else if (trackMidi.Notes[i].StartTime > currImpulse)
                     {
@@ -139,13 +155,25 @@ namespace Assets.A.Scripts
                 if (listNotePlay.Count > 0)
                 {
                     //  Debug.Log("currImpulse: " + currImpulse);
-                    if (minDuration != duration)
+                    if (minDuration != duration || listNotePlay.Count == 1)
                     {
                         OnNoteOn(listNotePlay.ToArray(), duration);
                     }
                     else
                     {
-                        OnNoteOn(listNotePlay.ToArray(), duration * listNotePlay.Count);
+                        if (nextNoteImpulse <= startTime)
+                        {
+                            OnNoteOn(listNotePlay.ToArray(), duration * listNotePlay.Count);
+                        }
+                        else if (startTime + duration * listNotePlay.Count <= nextNoteImpulse)
+                        {
+                            OnNoteOn(listNotePlay.ToArray(), duration * listNotePlay.Count);
+                        }
+                        else
+                        {
+                            duration = nextNoteImpulse - (startTime);
+                            OnNoteOn(listNotePlay.ToArray(), duration);
+                        }
                     }
 
                 }
